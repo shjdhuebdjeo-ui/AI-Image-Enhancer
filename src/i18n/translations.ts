@@ -1,0 +1,42 @@
+export const translations = {
+  en: {
+    title: 'AI Image Enhancer',
+    tokens: 'Tokens',
+    uploadTitle: 'Upload Your Image',
+    uploadSubtitle: 'Drag and drop or click to select a file.',
+    selectImage: 'Select Image',
+    original: 'Original',
+    enhanced: 'Enhanced',
+    enhancing: 'Enhancing Image...',
+    readyToEnhance: 'Ready to Enhance',
+    enhance: 'Enhance',
+    download: 'Download',
+    newImage: 'New Image',
+    outOfTokens: 'Out of Tokens!',
+    adModalSubtitle: 'Watch a short ad to enhance your image for free.',
+    loadingAd: 'Loading Ad...',
+    watchAd: 'Watch Ad & Enhance Image',
+    maybeLater: 'Maybe later',
+    language: 'العربية'
+  },
+  ar: {
+    title: 'محسّن الصور بالذكاء الاصطناعي',
+    tokens: 'محاولات',
+    uploadTitle: 'ارفع صورتك',
+    uploadSubtitle: 'اسحب وأفلت أو انقر لاختيار ملف.',
+    selectImage: 'اختر صورة',
+    original: 'الأصلية',
+    enhanced: 'المحسّنة',
+    enhancing: 'جاري تحسين الصورة...',
+    readyToEnhance: 'جاهز للتحسين',
+    enhance: 'تحسين',
+    download: 'تحميل',
+    newImage: 'صورة جديدة',
+    outOfTokens: 'نفدت المحاولات!',
+    adModalSubtitle: 'شاهد إعلانًا قصيرًا لتحسين صورتك مجانًا.',
+    loadingAd: 'جاري تحميل الإعلان...',
+    watchAd: 'شاهد الإعلان وحسّن الصورة',
+    maybeLater: 'ربما لاحقًا',
+    language: 'English'
+  }
+};

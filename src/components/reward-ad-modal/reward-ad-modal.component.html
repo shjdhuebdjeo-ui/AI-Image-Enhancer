@@ -1,0 +1,30 @@
+<div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+  <div class="bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-6 sm:p-8 text-center border border-gray-700">
+    <div class="flex flex-col items-center">
+      <div class="bg-yellow-500/10 text-yellow-400 rounded-full h-16 w-16 flex items-center justify-center mb-5">
+        <i class="fas fa-coins text-3xl"></i>
+      </div>
+      <h2 class="text-2xl font-bold mb-2">{{ t().outOfTokens }}</h2>
+      <p class="text-gray-400 mb-6">
+        {{ t().adModalSubtitle }}
+      </p>
+      
+      <button 
+        (click)="watchAd()" 
+        [disabled]="isWatchingAd()"
+        class="w-full flex items-center justify-center gap-3 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-500 disabled:bg-gray-500 disabled:cursor-wait transition-all duration-300 transform hover:scale-105">
+        @if (isWatchingAd()) {
+          <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          <span>{{ t().loadingAd }}</span>
+        } @else {
+          <i class="fas fa-video"></i>
+          <span>{{ t().watchAd }}</span>
+        }
+      </button>
+      
+      <button (click)="close.emit()" [disabled]="isWatchingAd()" class="mt-4 text-gray-400 hover:text-white transition-colors text-sm">
+        {{ t().maybeLater }}
+      </button>
+    </div>
+  </div>
+</div>
