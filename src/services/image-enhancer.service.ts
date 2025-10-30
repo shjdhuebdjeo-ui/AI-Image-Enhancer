@@ -28,7 +28,7 @@ interface ReplicatePredictionResponse {
   providedIn: 'root'
 })
 export class ImageEnhancerService {
-  // The initial API call is proxied through Netlify (see netlify.toml)
+  // As requested, the API URL is set to use the Netlify proxy path.
   private readonly REPLICATE_API_URL = '/api/predictions';
   // Model: nightmareai/real-esrgan
   private readonly MODEL_VERSION = '4f20845348825fcb41e9d1a38f32230da37f818f2d011f0a2007a3c39050d032';
@@ -63,6 +63,7 @@ export class ImageEnhancerService {
    * @returns An Observable that emits a blob object URL to the enhanced image.
    */
   enhanceImage(image: File): Observable<string> {
+    // As requested, the API token is read from the Angular environment configuration.
     const apiToken = environment.REPLICATE_API_TOKEN;
 
     if (!apiToken || apiToken.startsWith('r8_') === false) {
@@ -72,9 +73,6 @@ export class ImageEnhancerService {
       return throwError(() => new Error(errorMessage));
     }
     
-    // As requested, we use a direct HTTP request.
-    // The Authorization header is set with the API token.
-    // Replicate uses 'Token' authentication, not 'Bearer'.
     const headers = new HttpHeaders({
       'Authorization': `Token ${apiToken}`,
       'Content-Type': 'application/json'
@@ -83,6 +81,8 @@ export class ImageEnhancerService {
     return this.fileToBase64(image).pipe(
       // Step 1: Create the prediction job on Replicate using a direct HTTP POST request with HttpClient.
       switchMap(base64Image => {
+        // The fileToBase64 function returns a full Data URI string (e.g., "data:image/png;base64,...").
+        // This is the correct format required by the Replicate API's `input.image` field.
         const body: ReplicatePredictionRequest = {
           version: this.MODEL_VERSION,
           input: { image: base64Image }
@@ -91,7 +91,8 @@ export class ImageEnhancerService {
         return this.http.post<ReplicatePredictionResponse>(this.REPLICATE_API_URL, body, { headers });
       }),
       // Step 2: Poll the 'get' URL for the prediction result using direct HTTP GET requests.
-      switchMap(predictionResponse => {
+      // FIX: Explicitly type `predictionResponse` to avoid it being inferred as `unknown`.
+      switchMap((predictionResponse: ReplicatePredictionResponse) => {
         if (!predictionResponse.urls || !predictionResponse.urls.get) {
             return throwError(() => new Error('Failed to get polling URL from Replicate.'));
         }
@@ -104,13 +105,15 @@ export class ImageEnhancerService {
         return timer(0, 2500).pipe( // Poll every 2.5 seconds
           tap(() => console.log('Polling for Replicate result via Netlify proxy...')),
           switchMap(() => poll$),
-          filter(res => ['succeeded', 'failed', 'canceled'].includes(res.status)),
+          // FIX: Explicitly type `res` to avoid it being inferred as `unknown`.
+          filter((res: ReplicatePredictionResponse) => ['succeeded', 'failed', 'canceled'].includes(res.status)),
           take(1),
           timeout(180000) // 3 minute timeout for the whole polling process
         );
       }),
       // Step 3: Process the final response from polling
-      switchMap(finalResponse => {
+      // FIX: Explicitly type `finalResponse` to avoid it being inferred as `unknown`.
+      switchMap((finalResponse: ReplicatePredictionResponse) => {
         if (finalResponse.status === 'succeeded' && finalResponse.output) {
           console.log('Replicate prediction succeeded.');
           // The output is often an array, get the first image URL.
@@ -127,7 +130,8 @@ export class ImageEnhancerService {
         }
       }),
       // Step 4: Convert the final image blob to an object URL for the component
-      map(imageBlob => {
+      // FIX: Explicitly type `imageBlob` to `Blob` to fix `createObjectURL` parameter error.
+      map((imageBlob: Blob) => {
         console.log('Enhanced image blob received, creating object URL.');
         return URL.createObjectURL(imageBlob);
       }),
